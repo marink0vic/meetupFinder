@@ -2,11 +2,38 @@
 <html xmlns:th="http://thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Find your meeting</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
 <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+<link rel="stylesheet" href="/css/style.css"/>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+	$(function () {
+	  $(".desc").each(function () {
+		  len=$(this).text().length;
+		  if(len>200){
+		    $(this).text($(this).text().substr(0,200)+'...');
+		  }
+	  });
+	  
+	  $(".alert-danger").each(function () {
+		 if(!$(this).text().trim().length){
+			 $('#showMessage').hide();
+		 }else{
+			 $('#showMessage').show();
+		 }
+	  });
+	});
+  /*]]>*/
+</script>
 </head>
 <body>
+
+<div class="container-fluid">
+	<div class="text">
+		<h1>find <span style="color:#dc3545">meetup</span> near your location</h1>
+	</div>
+</div>
 
 <div class="container">
 	<form action="" method="post" class="needs-validation" novalidate>
@@ -24,6 +51,30 @@
 	    </div>
 	  </div>
 	</form>
+</div>
+
+<div id="showMessage" class="alert alert-danger collapse" role="alert">
+  <p th:text="${message}"></p>
+</div>
+
+<div class="container">
+  <div class="card-columns">
+      <div th:each="meeting : ${meetings}">
+        <div class="card text-white bg-dark mb-3">
+		  <div class="card-header">
+		    <h3 th:text="${meeting.name}"></h3>
+		  </div>
+		  <div class="card-body">
+		  	<h5 th:text="${meeting.city}"></h5>
+		    <h6 th:text="${'Rating: ' + meeting.rating}"></h6>
+		    <hr>
+		     <p class="desc" th:text="${T(org.jsoup.Jsoup).parse(meeting.description).text()}"></p>
+		    <!-- <p class="desc" th:text="${meeting.description}"></p> -->
+		    <a th:href="${meeting.link}" class="btn btn-danger" target="blank">Go to meeting</a>
+		  </div>
+		</div>
+    </div>
+  </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
