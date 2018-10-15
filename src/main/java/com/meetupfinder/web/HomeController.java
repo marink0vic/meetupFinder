@@ -31,6 +31,11 @@ public class HomeController {
 	
 	@PostMapping("")
 	public String homePage(@ModelAttribute Location location, ModelMap model) throws JsonParseException, JsonMappingException, IOException {
+		if(location.getCity().trim().length() == 0 || location.getTopic().trim().length() == 0) {
+			model.put("message", "you need to enter both parameters");
+			return "home";
+		}
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		Location cityLoc = returnLocation(location, objectMapper);
 		
