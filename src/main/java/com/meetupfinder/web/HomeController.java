@@ -1,6 +1,7 @@
 package com.meetupfinder.web;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.springframework.stereotype.Controller;
@@ -39,6 +40,11 @@ public class HomeController {
 		ObjectMapper objectMapper = new ObjectMapper();
 		Location cityLoc = returnLocation(location, objectMapper);
 		
+		if(cityLoc == null) {
+			model.put("message", "You did not enter a walid request");
+			return "home";
+		}
+		
 		cityLoc.setTopic(location.getTopic());
 		System.out.println(cityLoc);
 		
@@ -55,14 +61,17 @@ public class HomeController {
 		return "redirect:/";
 	}
 	
-	private Location returnLocation( Location location, ObjectMapper objectMapper) throws IOException {
-		String tempCity = location.getCity().replaceAll(" ", "+");
+	private Location returnLocation( Location location, ObjectMapper objectMapper) throws IOException{
+		String tempCity = location.getCity().trim().replaceAll(" ", "+");
 		
 		String city = "https://api.meetup.com/2/cities?offset=0&query="+ tempCity 
 				+"&format=json&photo-host=public&page=10&radius=50&order=size&desc=false";
 		
 		URL urlClass = new URL(city);
+		
 		JsonNode arrNode = new ObjectMapper().readTree(urlClass).get("results").get(0);
+		
+		if(arrNode == null) return null;
 		
 		return objectMapper.readValue(arrNode.toString(), Location.class);
 	}
